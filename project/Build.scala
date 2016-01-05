@@ -37,6 +37,6 @@ object Dependencies {
 	def test      (deps: ModuleID*): Seq[ModuleID] = deps map (_ % "test") 
 
 	val scalatest 		= "org.scalatest" 			%% "scalatest"		% "2.2.4"
-	val scalajack		= "co.blocke"				%% "scalajack"		% "4.4.5"
+	val scalajack		= "co.blocke"				%% "scalajack"		% "4.4.6"
 	val joda 			= "joda-time"				% "joda-time"		% "2.3"
 }

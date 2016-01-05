@@ -9,8 +9,13 @@ import org.joda.time.format._
 
 class JarvisSpec extends FunSpec with Matchers {
 
-	implicit val j = new Jarvis(){}
-	val me = j.players.find(_.nick == "Akka")
+	implicit val j = new Jarvis(
+		"/Users/wmy965/Downloads/lk/habitats.json",
+		"/Users/wmy965/Downloads/lk/habitats-last4h.json",
+		"/Users/wmy965/Downloads/lk/players.json",
+		"/Users/wmy965/Downloads/lk/mine.dat",
+		"Akka"
+		)
 
 	def time(wait:Long) = {
 		val hr = wait/(60*60)
@@ -21,25 +26,8 @@ class JarvisSpec extends FunSpec with Matchers {
 
 	describe("======================\n|  Connection Tests  |\n======================") {
 		it("Must parse data files") {
-			println(j.players.size())
-			println(j.castles.size())
-		}
-		it("Find Akka") {
-			println(me)
-			val c = j.myCastles(me.get.id).get
-			println(c.size)
-
-			// import scala.math._
-			// val c1 = c.findByName("Umfahrt") 
-			// val c2 = j.findCastleByName("Beast Mode #10") 
-			// println(j.distance(c1.get,c2.get)) // 13
-
-			// val n = j.neighbors( c.findByName("Umfahrt").get, 10 )
-			// println(n.size)
-
-//			val m = j.chickenWire(c.findByName("Umfahrt").get, 20, 10)
-//			println(m.map({case(k,v) => s"$k -> ${v.name}/${v.id}"}))
-
+			println("Players: "+j.players.size())
+			println("Castles: "+j.castles.size())
 		}
 	}
 	/*
@@ -56,27 +44,39 @@ class JarvisSpec extends FunSpec with Matchers {
 		//	delayDuration = targetTime - (distance*speed) - launchAround
 		val z = targetTime.minus( new Duration( oneBlockSpeed.getMillis*distanceInBlocks ) )
 		val wait = abs(Seconds.secondsBetween( launchAround, z ).getSeconds)
-println("Target     : "+targetTime)
-println("Launch Time: "+launchAround)
-println(s"Wait: ${time(wait)}")
-println("Travel time: "+time((oneBlockSpeed.getStandardSeconds()*distanceInBlocks)))
-println("------------------------")
+		println("Target     : "+targetTime)
+		println("Launch Time: "+launchAround)
+		println(s"Wait: ${time(wait)}")
+		println("Travel time: "+time((oneBlockSpeed.getStandardSeconds()*distanceInBlocks)))
+		println("------------------------")
 	}
 	*/
+	it("Battle") {
+		val fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ")
+		val landing = fmt.withOffsetParsed().parseDateTime("2016-01-04T19:00:00-06:00")
+		val launchAbout = fmt.withOffsetParsed().parseDateTime("2016-01-04T15:20:00-06:00")
+
+		val st = SelfTrickle(
+			j.myCastles.get.findByName("Umfahrt").get,
+			landing,
+			launchAbout
+			)
+
+		println( st.sheet() )
+	}
+	/*
 	it("Battle") {
 		val fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ")
 		val landing = fmt.withOffsetParsed().parseDateTime("2016-01-04T20:00:00-06:00")
 		val launchAbout = fmt.withOffsetParsed().parseDateTime("2016-01-04T16:45:00-06:00")
 
-		val b = Battle(
-			j.findCastleByName("Umfahrt").get,
+		val t = Trickle(
+			j.myCastles.get.findByName("Umfahrt").get,
 			landing,
-			launchAbout,
-			Compliment(List(0,1000,1000,0,0,1000)),
-			Slowest.Sword,
-			new Duration(12*60000+38000)
-			)
+			launchAbout
+		)
 
-		println( b.selfTrickleSheet() )
+		println( t.sheet() )
 	}
+	*/
 }
